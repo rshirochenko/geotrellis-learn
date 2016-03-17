@@ -108,43 +108,6 @@ object LandsatIngest {
     (mtl, MultibandGeoTiff(ArrayMultibandTile(bandTiffs.map(_.tile)), bandTiffs.head.extent, bandTiffs.head.crs))
   }
 
-  // def run1(layerName: String, images: Array[String], bands: Array[String])(implicit sc: SparkContext): Unit = {
-  //   val targetLayoutScheme = ZoomedLayoutScheme(WebMercator, 256)
-    
-  //   val image = images(0)
-  //   val (mtl, geoTiff) = readBands(image, bands)
-  //   val ingestElement = (TemporalProjectedExtent(geoTiff.extent, geoTiff.crs, mtl.dateTime), geoTiff.tile)
-  //   val sourceTile = sc.parallelize(Seq(ingestElement))
-  //   val (_, tileLayerMetadata: TileLayerMetadata[SpaceTimeKey]) = TileLayerMetadata.fromRdd[TemporalProjectedExtent, MultibandTile, SpaceTimeKey](sourceTile, FloatingLayoutScheme(512))
-  //   val tiled = sourceTile.tileToLayout[SpaceTimeKey](tileLayerMetadata, Tiler.Options(resampleMethod = NearestNeighbor, partitioner = new HashPartitioner(100)))
-  //   val rdd = MultibandTileLayerRDD(tiled, tileLayerMetadata)
-  //   val tileSet = rdd.reproject(targetLayoutScheme, bufferSize = 30, Reproject.Options(method = Bilinear, errorThreshold = 0))
-
-  //   val zoom = tileSet._1
-  //   val headRdd = tileSet._2
-  //   val rdd2 = ContextRDD(
-  //     sc.union(tileSet._2),
-  //        TileLayerMetadata[SpaceTimeKey](
-  //          headRdd.metadata.cellType,
-  //          headRdd.metadata.layout,
-  //          headRdd.metadata.extent,
-  //          headRdd.metadata.crs,
-  //          headRdd.metadata.bounds
-  //     )
-  //   )
-
-  //   val attributeStore = FileAttributeStore(catalogPath)
-  //   val writer = FileLayerWriter(attributeStore)
-  //   val keyIndex = ZCurveKeyIndexMethod.byMilliseconds(1000L * 60 * 60 * 24)
-  //   writer.write(LayerId(layerName, zoom), rdd2, keyIndex)
-
-  //   val lastRdd = Pyramid.upLevels(rdd2, targetLayoutScheme, zoom, Bilinear) { (rdd2, zoom) =>
-  //     writer.write(LayerId(layerName, zoom), rdd2, keyIndex )
-  //   }
-
-  //   println("Done")
-  // }
-
   def run(layerName: String, images: Array[String], bands: Array[String])(implicit sc: SparkContext): Unit = {
     val targetLayoutScheme = ZoomedLayoutScheme(WebMercator, 256)
     // Create tiled RDDs for each
